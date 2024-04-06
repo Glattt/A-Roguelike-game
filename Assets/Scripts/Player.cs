@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
@@ -23,6 +24,17 @@ public class Player : MonoBehaviour
     private Animator anim;
     private SpriteRenderer sprite;
 
+    private Transform enemy;
+
+    [SerializeField] float obstacleRayDistance;
+    public GameObject obstacleRayObject;
+    Vector2 characterDirection;
+    public float coneAngle = 30f;
+    public LayerMask enemyLayer;
+
+    [SerializeField] private float delayTime; //Задержка между выстрелами 
+    private float delay;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +42,8 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();   
         anim = GetComponent<Animator>();
         sprite = GetComponentInChildren<SpriteRenderer>();
+        enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Transform>();
+        characterDirection = Vector2.down;
     }
 
     // Update is called once per frame
@@ -44,27 +58,30 @@ public class Player : MonoBehaviour
             {
                 anim.speed = 1;
                 state = States.up;
+                characterDirection = Vector2.up;
             }
             else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
             {
                 anim.speed = 1;
                 state = States.down;
+                characterDirection = Vector2.down;
             }
             else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             {
                 sprite.flipX = false;
                 anim.speed = 1;
                 state = States.left;
+                characterDirection = Vector2.left;
             }
             else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
             {
                 sprite.flipX = true;
                 anim.speed = 1;
                 state = States.left;
+                characterDirection = Vector2.right;
             }
             else
             {
-                //state = States.idle;
                 anim.speed = 0;
             }
         }
@@ -95,6 +112,10 @@ public class Player : MonoBehaviour
             state = nowstate;
             run=true;
         }
+        if (Input.GetKey(KeyCode.Space))
+        {
+            IsEnemyDetected();
+        }
 
     }
 
@@ -122,7 +143,7 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (health <5 && other.CompareTag("Heal"))
+        if (health <5 && other.CompareTag("Heal") && health>0)
         {
             ChangeHealth(1);
             Destroy(other.gameObject);
@@ -132,6 +153,50 @@ public class Player : MonoBehaviour
     public void ChangeHealth(int healthValue)
     {
         health += healthValue;
+        if (health > 0)
+        {
+            return;
+        }
+        else
+        {
+            SceneManager.LoadScene(3);
+        }
+    }
+
+    public void IsEnemyDetected()
+    {
+        RaycastHit2D hitObstacle = Physics2D.Raycast(obstacleRayObject.transform.position, new Vector2(characterDirection.x, characterDirection.y), obstacleRayDistance, enemyLayer);
+        Vector2 left = Quaternion.Euler(0, 0, -coneAngle) * new Vector2(characterDirection.x, characterDirection.y);
+        Vector2 right = Quaternion.Euler(0, 0, coneAngle) * new Vector2(characterDirection.x, characterDirection.y);
+        RaycastHit2D hitObstacleleft = Physics2D.Raycast(obstacleRayObject.transform.position, left, obstacleRayDistance, enemyLayer);
+        RaycastHit2D hitObstacleright = Physics2D.Raycast(obstacleRayObject.transform.position, right, obstacleRayDistance, enemyLayer);
+
+        if (hitObstacle.collider != null || hitObstacleleft.collider != null || hitObstacleright.collider != null)
+        {
+            //Debug.Log("Enemy Detected  Attack Mode Activated");
+            Debug.DrawRay(obstacleRayObject.transform.position, hitObstacle.distance * new Vector2(characterDirection.x, characterDirection.y), Color.red);
+            Debug.DrawRay(obstacleRayObject.transform.position, hitObstacle.distance * left, Color.red);
+            Debug.DrawRay(obstacleRayObject.transform.position, hitObstacle.distance * right, Color.red);
+            if (delay > 0)
+            {
+                delay -= Time.deltaTime;
+                Debug.Log("в"+delay);
+            }
+            if (delay <= 0)
+            {
+                enemy.GetComponent<EnemyFollow>().ChangeHealth(-0.5);
+
+                delay = delayTime;
+
+            }
+        }
+        else
+        {
+            Debug.Log("NO Enemy");
+            Debug.DrawRay(obstacleRayObject.transform.position, obstacleRayDistance * new Vector2(characterDirection.x, characterDirection.y), Color.green);
+            Debug.DrawRay(obstacleRayObject.transform.position, hitObstacleleft.distance * left, Color.green);
+            Debug.DrawRay(obstacleRayObject.transform.position, hitObstacleright.distance * right, Color.green);
+        }
     }
 }
 
