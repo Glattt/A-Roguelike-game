@@ -184,7 +184,18 @@ public class Player : MonoBehaviour
             }
             if (delay <= 0)
             {
-                enemy.GetComponent<EnemyFollow>().ChangeHealth(-0.5);
+                if (hitObstacle.collider != null && hitObstacle.collider.CompareTag("Enemy"))
+                {
+                    hitObstacle.collider.GetComponent<EnemyFollow>().ChangeHealth(-1);
+                }
+                else if (hitObstacleleft.collider != null && hitObstacleleft.collider.CompareTag("Enemy"))
+                {
+                    hitObstacleleft.collider.GetComponent<EnemyFollow>().ChangeHealth(-1);
+                }
+                else if (hitObstacleright.collider != null && hitObstacleright.collider.CompareTag("Enemy"))
+                {
+                    hitObstacleright.collider.GetComponent<EnemyFollow>().ChangeHealth(-1);
+                }
 
                 delay = delayTime;
 
