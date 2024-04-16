@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RoomSpawner : MonoBehaviour
@@ -8,11 +9,12 @@ public class RoomSpawner : MonoBehaviour
     private RoomVariants variants;
     private int rand;
     private bool spawned = false;
-    private float waitTime = 1f;
+    private float waitTime = 3f;
+
 
     // Start is called before the first frame update
     void Start()
-    {
+    { 
         variants = GameObject.FindGameObjectWithTag("Rooms").GetComponent<RoomVariants>();
         Destroy(gameObject, waitTime);
         Invoke("Spawn", 0.2f);
@@ -26,7 +28,8 @@ public class RoomSpawner : MonoBehaviour
 
     public void Spawn()
     {
-        if (!spawned)
+        GameObject[] allObjects = GameObject.FindGameObjectsWithTag("r");
+        if (!spawned && allObjects.Length<20)
         {
             if (direction == Direction.Top)
             {
@@ -49,12 +52,15 @@ public class RoomSpawner : MonoBehaviour
                 Instantiate(variants.rightRooms[rand], transform.position, variants.rightRooms[rand].transform.rotation);
             }
             spawned = true;
+            Debug.Log(allObjects.Length);
         }
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (other.CompareTag("RoomPoint") && other.GetComponent<RoomSpawner>().spawned)
+        Vector2 roomPointPosition = other.transform.position;
+        Vector2 targetPosition = new Vector2(0f, 0f);
+        if (other.CompareTag("RoomPoint") && other.GetComponent<RoomSpawner>().spawned || other.CompareTag("r")|| roomPointPosition == targetPosition)
         {
             Destroy(gameObject);
         }

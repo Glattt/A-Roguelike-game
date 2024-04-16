@@ -9,6 +9,7 @@ public class RoomVariants : MonoBehaviour
     public GameObject[] bottomRooms;
     public GameObject[] rightRooms;
     public GameObject[] leftRooms;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,4 +21,5 @@ public class RoomVariants : MonoBehaviour
     {
         
     }
+
 }

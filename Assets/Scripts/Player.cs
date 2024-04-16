@@ -13,7 +13,6 @@ public class Player : MonoBehaviour
     public bool run;
     States nowstate = new States();
 
-
     public Image[] hearts;
     public Sprite fullHealth;
     public Sprite nofullHealth;
@@ -186,15 +185,15 @@ public class Player : MonoBehaviour
             {
                 if (hitObstacle.collider != null && hitObstacle.collider.CompareTag("Enemy"))
                 {
-                    hitObstacle.collider.GetComponent<EnemyFollow>().ChangeHealth(-1);
+                    hitObstacle.collider.GetComponent<EnemyHealth>().ChangeHealth(-1);
                 }
                 else if (hitObstacleleft.collider != null && hitObstacleleft.collider.CompareTag("Enemy"))
                 {
-                    hitObstacleleft.collider.GetComponent<EnemyFollow>().ChangeHealth(-1);
+                    hitObstacleleft.collider.GetComponent<EnemyHealth>().ChangeHealth(-1);
                 }
                 else if (hitObstacleright.collider != null && hitObstacleright.collider.CompareTag("Enemy"))
                 {
-                    hitObstacleright.collider.GetComponent<EnemyFollow>().ChangeHealth(-1);
+                    hitObstacleright.collider.GetComponent<EnemyHealth>().ChangeHealth(-1);
                 }
 
                 delay = delayTime;

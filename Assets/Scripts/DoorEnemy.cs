@@ -5,6 +5,7 @@ using UnityEngine;
 public class DoorEnemy : MonoBehaviour
 {
     public double health;
+    public bool isWall = false;
 
     // Start is called before the first frame update
     void Start()
@@ -18,16 +19,32 @@ public class DoorEnemy : MonoBehaviour
         
     }
 
+    public GameObject block;
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        Debug.Log("door");
+        if (other.CompareTag("wall"))
+        {
+            Instantiate(block, transform.position, Quaternion.identity);
+            Destroy(gameObject);
+            isWall = true;
+            Debug.Log("wall");
+        }
+    }
+
     public void ChangeHealth(double healthValue)
     {
-        health += healthValue;
-        if (health > 0)
+        if (!isWall)
         {
-            return;
-        }
-        else
-        {
-            Destroy(gameObject);
+            health += healthValue;
+            if (health > 0)
+            {
+                return;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }
