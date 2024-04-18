@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class EnemyFollow : MonoBehaviour
 {
     public float speed;
-    //public double health;
     private Transform player;
-    public EnemyHealth health;
+    [HideInInspector] public EnemyHealth health;
 
     private Animator anim;
     private Rigidbody2D rb;
@@ -17,6 +17,7 @@ public class EnemyFollow : MonoBehaviour
     private bool isMovingTowardsPlayer = true;
     public float resumeMovementDistance = 1f;
     private float timer = 0f;
+
 
     // Start is called before the first frame update
     void Start()
@@ -66,27 +67,14 @@ public class EnemyFollow : MonoBehaviour
     }
 
 
-    /*void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
             isMovingTowardsPlayer = false;
             player.GetComponent<Player>().ChangeHealth(-1);
         }
-    }*/
-
-    /*public void ChangeHealth(double healthValue)
-    {
-        health += healthValue;
-        if (health > 0)
-        {
-            return;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }*/
+    }
 
     private EnemStates state
     {

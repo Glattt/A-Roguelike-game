@@ -52,7 +52,7 @@ public class RoomSpawner : MonoBehaviour
                 Instantiate(variants.rightRooms[rand], transform.position, variants.rightRooms[rand].transform.rotation);
             }
             spawned = true;
-            Debug.Log(allObjects.Length);
+            //Debug.Log(allObjects.Length);
         }
     }
 

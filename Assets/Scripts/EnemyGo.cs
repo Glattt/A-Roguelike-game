@@ -8,13 +8,17 @@ public class NewBehaviourScript : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 moveDirection = new Vector2(1,0);
     private float timer;
+    private float timer1 = 0f;
     private Transform player;
-    //public double health;
+    public EnemyHealth health;
+    private Animator anim;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+        anim = GetComponent<Animator>();
+        health = this.GetComponent<EnemyHealth>();
     }
 
     void Update()
@@ -26,20 +30,29 @@ public class NewBehaviourScript : MonoBehaviour
             FlipDirection();
             timer = 0f;
         }
+
+        if (!health.isHeart)
+        {
+            state = EneRandStates.EnemyRandRun;
+        }
+        else
+        {
+            state = EneRandStates.EnemyRandHurt;
+            timer1 += Time.deltaTime;
+            if (timer1 >= 0.20f)
+            {
+                health.isHeart = false;
+            }
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        /*if (collision.gameObject.CompareTag("Untagged"))
-        {
-            FlipDirection();
-        }*/
         moveDirection = new Vector2(Random.Range(-1, 2), Random.Range(-1, 2));
     }
 
     public void FlipDirection()
     {
-        //transform.localScale = new Vector3(moveDirection.x, 1f, 1f);
         moveDirection = new Vector2(Random.Range(-1, 2), Random.Range(-1, 2));
     }
 
@@ -59,16 +72,16 @@ public class NewBehaviourScript : MonoBehaviour
         }
     }
 
-    /*public void ChangeHealth(double healthValue)
+    private EneRandStates state
     {
-        health += healthValue;
-        if (health > 0)
-        {
-            return;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }*/
+        get { return (EneRandStates)anim.GetInteger("State"); }
+        set { anim.SetInteger("State", (int)value); }
+    }
+}
+
+public enum EneRandStates
+{
+    EnemyRandIdle,
+    EnemyRandRun,
+    EnemyRandHurt
 }

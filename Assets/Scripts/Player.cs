@@ -31,8 +31,11 @@ public class Player : MonoBehaviour
     public float coneAngle = 30f;
     public LayerMask enemyLayer;
 
-    [SerializeField] private float delayTime; //Задержка между выстрелами 
+    [SerializeField] private float delayTime;
     private float delay;
+
+    public GameObject letter;
+    private bool isLetterActive = false;
 
     // Start is called before the first frame update
     void Start()
@@ -86,6 +89,10 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            if (isLetterActive)
+            {
+                CloseLetter();
+            }
             run = false;
             nowstate = state;
             moveVelocity = moveInput.normalized * 0;
@@ -147,6 +154,11 @@ public class Player : MonoBehaviour
             ChangeHealth(1);
             Destroy(other.gameObject);
         }
+        if (other.CompareTag("lore"))
+        {
+            OpenLetter();
+            Destroy(other.gameObject);
+        }
     }
 
     public void ChangeHealth(int healthValue)
@@ -172,14 +184,12 @@ public class Player : MonoBehaviour
 
         if (hitObstacle.collider != null || hitObstacleleft.collider != null || hitObstacleright.collider != null)
         {
-            //Debug.Log("Enemy Detected  Attack Mode Activated");
             Debug.DrawRay(obstacleRayObject.transform.position, hitObstacle.distance * new Vector2(characterDirection.x, characterDirection.y), Color.red);
             Debug.DrawRay(obstacleRayObject.transform.position, hitObstacle.distance * left, Color.red);
             Debug.DrawRay(obstacleRayObject.transform.position, hitObstacle.distance * right, Color.red);
             if (delay > 0)
             {
                 delay -= Time.deltaTime;
-                Debug.Log("в"+delay);
             }
             if (delay <= 0)
             {
@@ -196,18 +206,46 @@ public class Player : MonoBehaviour
                     hitObstacleright.collider.GetComponent<EnemyHealth>().ChangeHealth(-1);
                 }
 
+                if (hitObstacle.collider != null && hitObstacle.collider.CompareTag("cursed"))
+                {
+                    hitObstacle.collider.GetComponent<CursedObj>().ChangeHealth(-1);
+                }
+                else if (hitObstacleleft.collider != null && hitObstacleleft.collider.CompareTag("cursed"))
+                {
+                    hitObstacleleft.collider.GetComponent<CursedObj>().ChangeHealth(-1);
+                }
+                else if (hitObstacleright.collider != null && hitObstacleright.collider.CompareTag("cursed"))
+                {
+                    hitObstacleright.collider.GetComponent<CursedObj>().ChangeHealth(-1);
+                }
+
                 delay = delayTime;
 
             }
         }
         else
         {
-            Debug.Log("NO Enemy");
+            //Debug.Log("NO Enemy");
             Debug.DrawRay(obstacleRayObject.transform.position, obstacleRayDistance * new Vector2(characterDirection.x, characterDirection.y), Color.green);
             Debug.DrawRay(obstacleRayObject.transform.position, hitObstacleleft.distance * left, Color.green);
             Debug.DrawRay(obstacleRayObject.transform.position, hitObstacleright.distance * right, Color.green);
         }
     }
+
+    public void OpenLetter()
+    {
+        letter.SetActive(true);
+        isLetterActive = true;
+        Time.timeScale = 0f;
+    }
+
+    public void CloseLetter()
+    {
+        Destroy(letter);
+        isLetterActive = false;
+        Time.timeScale = 1f;
+    }
+   
 }
 
 public enum States
