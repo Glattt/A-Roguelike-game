@@ -13,10 +13,12 @@ public class CursedObj : MonoBehaviour
     private float timer1 = 0f;
 
     public GameObject cross;
+    private Transform player;
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
     }
 
     // Update is called once per frame
@@ -46,6 +48,7 @@ public class CursedObj : MonoBehaviour
                 timer += Time.deltaTime;
                 if (timer >= 0.80f)
                 {
+                    player.GetComponent<Player>().PlayCount(30);
                     isDead = true;
                     state = CursedStates.CursedIdle;
                     cross.SetActive(true);

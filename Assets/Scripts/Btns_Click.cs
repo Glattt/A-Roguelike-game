@@ -9,10 +9,17 @@ public class Btns_Click : MonoBehaviour
 {
     private int selectMenu =0; 
     public int nextLevel;
+
+    public AudioClip musicBtn;
+    private AudioSource musicSource;
+
     // Start is called before the first frame update
     void Start()
     {
         getBtn(0).transform.localPosition = new Vector3(200f, -25, 0);
+
+        musicSource = GetComponent<AudioSource>();
+        musicSource.clip = musicBtn;
     }
 
     // Update is called once per frame
@@ -32,7 +39,7 @@ public class Btns_Click : MonoBehaviour
         }
         if (Input.GetKeyUp(KeyCode.Space))
         {
-
+            musicSource.Play();
             if (selectMenu == 0)
             {
                 SceneManager.LoadScene(nextLevel);
@@ -69,7 +76,7 @@ public class Btns_Click : MonoBehaviour
 
     public void Position()
     {
-
+        musicSource.Play();
         if (selectMenu > 2)
         {
             selectMenu = 0;

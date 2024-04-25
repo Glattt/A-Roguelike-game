@@ -44,11 +44,23 @@ public class NewBehaviourScript : MonoBehaviour
                 health.isHeart = false;
             }
         }
+        if (health.health == 0)
+        {
+            speed = 0;
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
         moveDirection = new Vector2(Random.Range(-1, 2), Random.Range(-1, 2));
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("r"))
+        {
+            health.ChangeHealth(-15);
+        }
     }
 
     public void FlipDirection()

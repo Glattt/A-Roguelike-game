@@ -10,10 +10,15 @@ public class RoomVariants : MonoBehaviour
     public GameObject[] rightRooms;
     public GameObject[] leftRooms;
 
+    public AudioClip musicClip;
+    private AudioSource musicSource;
     // Start is called before the first frame update
     void Start()
     {
-        
+        musicSource = GetComponent<AudioSource>();
+        musicSource.clip = musicClip;
+        musicSource.loop = true;
+        musicSource.Play();
     }
 
     // Update is called once per frame

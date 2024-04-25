@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -37,6 +38,9 @@ public class Player : MonoBehaviour
     public GameObject letter;
     private bool isLetterActive = false;
 
+    public int count = 0;
+    public Text nowCount;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,7 +48,14 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();   
         anim = GetComponent<Animator>();
         sprite = GetComponentInChildren<SpriteRenderer>();
-        enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Transform>();
+        try
+        {
+            enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Transform>();
+        }
+        catch 
+        {
+            Debug.Log("No enemies");
+        }
         characterDirection = Vector2.down;
     }
 
@@ -149,11 +160,11 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (health <5 && other.CompareTag("Heal") && health>0)
+        /*if (health <5 && other.CompareTag("Heal") && health>0 && other.CompareTag("Player"))
         {
             ChangeHealth(1);
             Destroy(other.gameObject);
-        }
+        }*/
         if (other.CompareTag("lore"))
         {
             OpenLetter();
@@ -170,7 +181,10 @@ public class Player : MonoBehaviour
         }
         else
         {
-            SceneManager.LoadScene(3);
+            PlayCount(-100);
+            //SceneManager.LoadScene(3);
+
+            SaveResult(true);
         }
     }
 
@@ -219,6 +233,19 @@ public class Player : MonoBehaviour
                     hitObstacleright.collider.GetComponent<CursedObj>().ChangeHealth(-1);
                 }
 
+                if (hitObstacle.collider != null && hitObstacle.collider.CompareTag("Pent"))
+                {
+                    hitObstacle.collider.GetComponent<Exit>().ChangeHealth(-1);
+                }
+                else if (hitObstacleleft.collider != null && hitObstacleleft.collider.CompareTag("Pent"))
+                {
+                    hitObstacleleft.collider.GetComponent<Exit>().ChangeHealth(-1);
+                }
+                else if (hitObstacleright.collider != null && hitObstacleright.collider.CompareTag("Pent"))
+                {
+                    hitObstacleright.collider.GetComponent<Exit>().ChangeHealth(-1);
+                }
+
                 delay = delayTime;
 
             }
@@ -245,7 +272,67 @@ public class Player : MonoBehaviour
         isLetterActive = false;
         Time.timeScale = 1f;
     }
-   
+
+    public void PlayCount(int a)
+    {
+        count += a;
+        nowCount.text = count.ToString();
+        Debug.Log(count.ToString());
+    }
+
+
+    public void SaveResult(bool died)
+    {
+        // Get the list of record counts from PlayerPrefs
+        List<int> records = new List<int>();
+        if (PlayerPrefs.HasKey("Records"))
+        {
+            string recordsString = PlayerPrefs.GetString("Records");
+            string[] recordArray = recordsString.Split(',');
+            foreach (string record in recordArray)
+            {
+                records.Add(int.Parse(record));
+            }
+        }
+
+        // Add the current count to the list of records
+        records.Add(count);
+
+        // Sort the records in descending order
+        records = records.OrderByDescending(r => r).ToList();
+
+        // Keep only the top 10 records
+        if (records.Count > 10)
+        {
+            records = records.GetRange(0, 10);
+        }
+        // Save the updated list of records to PlayerPrefs
+        string newRecordsString = string.Join(",", records);
+        PlayerPrefs.SetString("Records", newRecordsString);
+
+        Debug.Log(newRecordsString);
+
+        // Load the main menu scene
+        //SceneManager.LoadScene(2);
+        if (died)
+        {
+            SceneManager.LoadScene(3);
+        }
+        else
+        {
+            SceneManager.LoadScene(2);
+        }
+
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("r"))
+        {
+            transform.position = new Vector2(0, 0);
+        }
+    }
+
 }
 
 public enum States

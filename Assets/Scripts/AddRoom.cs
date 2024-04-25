@@ -8,8 +8,9 @@ public class AddRoom : MonoBehaviour
 
     public GameObject[] enemyTypes;
     public Transform[] enemySpawners;
+    public Transform[] runeSpawners;
 
-    public GameObject cross;
+    public GameObject[] heals;
 
     private RoomVariants variants;
     private bool spawned;
@@ -33,7 +34,6 @@ public class AddRoom : MonoBehaviour
     {
         if(collision.CompareTag("Player") && !spawned)
         {
-            Debug.Log("спавн");
             spawned = true;
             if (enemySpawners.Length == 1)
             {
@@ -47,7 +47,8 @@ public class AddRoom : MonoBehaviour
                 }
                 else if (rand == 1)
                 {
-                    Instantiate(cross, enemySpawners[0].position, Quaternion.identity);
+                    GameObject healType = heals[Random.Range(0, heals.Length)];
+                    Instantiate(healType, enemySpawners[0].position, Quaternion.identity);
                 }
             }
             else
@@ -64,11 +65,12 @@ public class AddRoom : MonoBehaviour
                     }
                     else if (rand == 8)
                     {
-                        Instantiate(cross, spawner.position, Quaternion.identity);
+                        GameObject healType = heals[Random.Range(0, heals.Length)];
+                        Instantiate(healType, enemySpawners[0].position, Quaternion.identity);
                     }
                 }
             }
-            StartCoroutine(CheckEnemies());
+             StartCoroutine(CheckEnemies());
         }
     }
 

@@ -11,7 +11,6 @@ public class RoomSpawner : MonoBehaviour
     private bool spawned = false;
     private float waitTime = 3f;
 
-
     // Start is called before the first frame update
     void Start()
     { 

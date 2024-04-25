@@ -22,7 +22,6 @@ public class DoorEnemy : MonoBehaviour
     public GameObject block;
     private void OnTriggerStay2D(Collider2D other)
     {
-        Debug.Log("door");
         if (other.CompareTag("wall"))
         {
             Instantiate(block, transform.position, Quaternion.identity);

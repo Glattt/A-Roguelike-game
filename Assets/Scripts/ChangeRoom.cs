@@ -28,9 +28,30 @@ public class ChangeRoom : MonoBehaviour
     {
         if(other.CompareTag("Player")) 
         {
-            other.transform.position += playerChangePos;
-            cam.transform.position += cameraChangePos;
-            linesObject.transform.position += cameraChangePos;
+            Vector3 newPosition = other.transform.position + playerChangePos;
+
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(newPosition, 0.1f);
+            bool objectWithTagR = false;
+            foreach (Collider2D collider in colliders)
+            {
+                if (collider.CompareTag("r"))
+                {
+                    objectWithTagR = true;
+                    break;
+                }
+            }
+
+            if (objectWithTagR)
+            {
+                other.transform.position = newPosition;
+                cam.transform.position += cameraChangePos;
+                linesObject.transform.position += cameraChangePos;
+            }
+            else
+            {
+                other.transform.position = new Vector3(0, 0, 1);
+                cam.transform.position = new Vector2(0,0);
+            }
         }
     }
 }

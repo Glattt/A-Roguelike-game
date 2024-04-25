@@ -44,6 +44,11 @@ public class EnemyFollow : MonoBehaviour
                 health.isHeart = false;
             }
         }
+
+        if (health.health == 0)
+        {
+            speed = 0;
+        }
         Vector3 direction = player.position - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         direction.Normalize();
