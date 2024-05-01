@@ -12,12 +12,15 @@ public class Btns_Click : MonoBehaviour
 
     public AudioClip musicBtn;
     private AudioSource musicSource;
+    private BtExit1 Ex;
+    public GameObject pauseMenuUI;
 
     // Start is called before the first frame update
     void Start()
     {
+        Ex = this.GetComponent<BtExit1>();
         getBtn(0).transform.localPosition = new Vector3(200f, -25, 0);
-
+        PlayerPrefs.SetInt("NowRecord", 0);
         musicSource = GetComponent<AudioSource>();
         musicSource.clip = musicBtn;
     }
@@ -25,34 +28,37 @@ public class Btns_Click : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyUp(KeyCode.S))
+        if (!Ex.isPaused)
         {
-            selectMenu += 1;
-            Position();
-
-        }
-        else if (Input.GetKeyUp(KeyCode.W))
-        {
-            selectMenu -= 1;
-            Position();
-
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            musicSource.Play();
-            if (selectMenu == 0)
+            if (Input.GetKeyUp(KeyCode.S))
             {
-                SceneManager.LoadScene(nextLevel);
+                selectMenu += 1;
+                Position();
 
             }
-            else if(selectMenu == 1)
+            else if (Input.GetKeyUp(KeyCode.W))
             {
-                SceneManager.LoadScene(2);
+                selectMenu -= 1;
+                Position();
+
             }
-            else if(selectMenu == 2)
+            if (Input.GetKeyUp(KeyCode.Return))
             {
-                Application.Quit();
+                musicSource.Play();
+                if (selectMenu == 0)
+                {
+                    SceneManager.LoadScene(nextLevel);
+                }
+                else if (selectMenu == 1)
+                {
+                    SceneManager.LoadScene(2);
+                }
+                else if (selectMenu == 2 && pauseMenuUI.activeSelf == false)
+                {
+                    Ex.isPaused = true;
+                }
             }
+
         }
     }
 

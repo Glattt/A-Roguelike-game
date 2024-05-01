@@ -12,6 +12,8 @@ public class RoomVariants : MonoBehaviour
 
     public AudioClip musicClip;
     private AudioSource musicSource;
+
+    public List<Vector2> rooms = new List<Vector2>();
     // Start is called before the first frame update
     void Start()
     {

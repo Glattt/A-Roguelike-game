@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Exit : MonoBehaviour
+public class Exit : Sounds
 {
     private Animator anim;
     public SpriteRenderer[] runes;
@@ -20,7 +21,7 @@ public class Exit : MonoBehaviour
     private float timer1 = 0f;
     List<int> usedInd = new List<int>();
     GameObject[] spawnPoints;
-
+    public AudioSource audioSource;
     private Transform player;
     // Start is called before the first frame update
     void Start()
@@ -83,12 +84,19 @@ public class Exit : MonoBehaviour
 
     public void ChangeHealth(double healthValue)
     {
-
-        if (health > 0)
+        if (runesCount == 5)
         {
-            isHeart = true;
-            health += healthValue;
+            if (health > 0)
+            {
+                if (!audioSource.isPlaying)
+                {
+                    PlaySound(sounds[0], 0.1f);
+                }
+                isHeart = true;
+                health += healthValue;
+            }
         }
+
     }
 
     public void LightUp()

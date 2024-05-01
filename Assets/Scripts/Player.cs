@@ -1,11 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 
-public class Player : MonoBehaviour
+public class Player : Sounds
 {
     public float speed;
     public int health;
@@ -48,6 +51,8 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();   
         anim = GetComponent<Animator>();
         sprite = GetComponentInChildren<SpriteRenderer>();
+        count = PlayerPrefs.GetInt("NowRecord");
+        nowCount.text = count.ToString();
         try
         {
             enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Transform>();
@@ -59,6 +64,7 @@ public class Player : MonoBehaviour
         characterDirection = Vector2.down;
     }
 
+    bool paused;
     // Update is called once per frame
     void Update()
     {
@@ -129,11 +135,30 @@ public class Player : MonoBehaviour
             state = nowstate;
             run=true;
         }
+        else if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            Pause();
+            
+        }
         if (Input.GetKey(KeyCode.Space))
         {
             IsEnemyDetected();
         }
 
+    }
+
+    private void Pause()
+    {
+        if (paused)
+        {
+            Debug.Log("unpause");
+            Time.timeScale = 1f;
+        }
+        else
+        {
+            Debug.Log("pause");
+            Time.timeScale = 0f;
+        }
     }
 
     private void FixedUpdate()
@@ -158,23 +183,25 @@ public class Player : MonoBehaviour
         set { anim.SetInteger("state", (int)value); }
     }
 
+    bool played;
     private void OnTriggerEnter2D(Collider2D other)
     {
-        /*if (health <5 && other.CompareTag("Heal") && health>0 && other.CompareTag("Player"))
+        if (other.CompareTag("lore") && !played)
         {
-            ChangeHealth(1);
-            Destroy(other.gameObject);
-        }*/
-        if (other.CompareTag("lore"))
-        {
+            PlaySound(sounds[0], 0.1f);
             OpenLetter();
             Destroy(other.gameObject);
+            played = true;
         }
     }
 
     public void ChangeHealth(int healthValue)
     {
         health += healthValue;
+        if (healthValue < 0)
+        {
+            PlaySound(sounds[1], 0.2f);
+        }
         if (health > 0)
         {
             return;
@@ -182,8 +209,6 @@ public class Player : MonoBehaviour
         else
         {
             PlayCount(-100);
-            //SceneManager.LoadScene(3);
-
             SaveResult(true);
         }
     }
@@ -252,7 +277,6 @@ public class Player : MonoBehaviour
         }
         else
         {
-            //Debug.Log("NO Enemy");
             Debug.DrawRay(obstacleRayObject.transform.position, obstacleRayDistance * new Vector2(characterDirection.x, characterDirection.y), Color.green);
             Debug.DrawRay(obstacleRayObject.transform.position, hitObstacleleft.distance * left, Color.green);
             Debug.DrawRay(obstacleRayObject.transform.position, hitObstacleright.distance * right, Color.green);
@@ -296,7 +320,10 @@ public class Player : MonoBehaviour
         }
 
         // Add the current count to the list of records
-        records.Add(count);
+        if (!records.Contains(count))
+        {
+            records.Add(count);
+        }
 
         // Sort the records in descending order
         records = records.OrderByDescending(r => r).ToList();
@@ -310,16 +337,20 @@ public class Player : MonoBehaviour
         string newRecordsString = string.Join(",", records);
         PlayerPrefs.SetString("Records", newRecordsString);
 
-        Debug.Log(newRecordsString);
+        PlayerPrefs.SetInt("NowRecord", count);
 
-        // Load the main menu scene
-        //SceneManager.LoadScene(2);
+        Debug.Log("каунт");
+        Debug.Log(count);
+
+
         if (died)
         {
+            PlayerPrefs.SetInt("Died", 1);
             SceneManager.LoadScene(3);
         }
         else
         {
+            PlayerPrefs.SetInt("Died", 0);
             SceneManager.LoadScene(2);
         }
 

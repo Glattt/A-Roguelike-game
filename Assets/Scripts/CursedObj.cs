@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CursedObj : MonoBehaviour
+public class CursedObj : Sounds
 {
     public double health;
     public bool isHeart;
@@ -63,13 +63,22 @@ public class CursedObj : MonoBehaviour
 
     }
 
+    bool played;
     public void ChangeHealth(double healthValue)
     {
-        
         if (health > 0)
         {
+            PlaySound(sounds[0], 0.2f);
             isHeart = true;
             health += healthValue;
+        }
+        else
+        {
+            if (!played)
+            {
+                PlaySound(sounds[1], 0.1f);
+                played = true;
+            }
         }
     }
     private CursedStates state

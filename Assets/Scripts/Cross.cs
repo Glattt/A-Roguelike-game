@@ -5,6 +5,7 @@ using UnityEngine;
 public class Cross : Sounds
 {
     private Transform player;
+    private Transform playerHealth;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,7 +19,7 @@ public class Cross : Sounds
     }
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && player.GetComponent<Player>().health<5)
         {
             player.GetComponent<Player>().PlayCount(-20);
             player.GetComponent<Player>().ChangeHealth(1);
